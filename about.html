@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О нашем клубе | Книжный клуб</title>
+    <style>
+        /* Основные стили (аналогичные главной странице) */
+        :root {
+            --beige: #F5F1E6;
+            --warm-gray: #D8D5CC;
+            --brown: #6B4F3D;
+            --dark-brown: #3E2D21;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--beige);
+            color: var(--dark-brown);
+            line-height: 1.6;
+        }
+        
+        /* Шапка (аналогичная главной странице) */
+        header {
+            background-color: var(--brown);
+            color: var(--beige);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+        
+        header.scrolled {
+            padding: 0.5rem 2rem;
+            background-color: rgba(107, 79, 61, 0.95);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--beige);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--beige);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+        }
+        
+        /* Основной контент страницы */
+        .about-hero {
+            height: 60vh;
+            background: linear-gradient(rgba(62, 45, 33, 0.7), rgba(62, 45, 33, 0.7)), 
+                        url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--beige);
+            padding: 0 1rem;
+            margin-top: 60px;
+        }
+        
+        .about-hero-content {
+            max-width: 800px;
+            animation: fadeIn 1.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .about-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Секция "О нас" */
+        .about-section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--dark-brown);
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 3px;
+            background-color: var(--brown);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .about-text {
+            animation: slideInLeft 1s ease-out;
+        }
+        
+        .about-image {
+            animation: slideInRight 1s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .about-image img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+        
+        .about-image img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .about-text p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Секция "Наши правила" */
+        .rules-section {
+            background-color: var(--warm-gray);
+            padding: 5rem 2rem;
+        }
+        
+        .rules-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .rule-card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .rule-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .rule-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .rule-icon {
+            font-size: 2.5rem;
+            color: var(--brown);
+            margin-bottom: 1rem;
+        }
+        
+        .rule-card h3 {
+            color: var(--brown);
+            margin-bottom: 1rem;
+        }
+        
+        /* Секция "Команда" */
+        .team-section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .team-member {
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+        
+        .team-member.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .member-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1.5rem;
+            border: 5px solid var(--warm-gray);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+        
+        .team-member:hover .member-photo {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-color: var(--brown);
+        }
+        
+        .team-member h3 {
+            color: var(--brown);
+            margin-bottom: 0.5rem;
+        }
+        
+        .member-role {
+            color: var(--dark-brown);
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        
+        /* Подвал (аналогичный главной странице) */
+        footer {
+            background-color: var(--dark-brown);
+            color: var(--warm-gray);
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .social-links {
+            margin: 1rem 0;
+        }
+        
+        .social-links a {
+            color: var(--warm-gray);
+            margin: 0 10px;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            color: var(--beige);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 60px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 60px);
+                background-color: var(--brown);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: var(--transition);
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .nav-links li {
+                margin: 1.5rem 0;
+            }
+            
+            .about-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-image {
+                order: -1;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .about-hero h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header id="header">
+        <nav>
+            <div class="logo">Книжный клуб</div>
+            <div class="menu-toggle" id="mobile-menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="about.html" class="active">О клубе</a></li>
+                <li><a href="schedule.html">Расписание</a></li>
+                <li><a href="library.html">Библиотека</a></li>
+                <li><a href="reviews.html">Отзывы</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Герой секция -->
+    <section class="about-hero">
+        <div class="about-hero-content">
+            <h1>О нашем клубе</h1>
+            <p>Узнайте больше о нашей истории, ценностях и людях, которые создают атмосферу нашего клуба</p>
+        </div>
+    </section>
+
+    <!-- Секция "О нас" -->
+    <section class="about-section">
+        <h2 class="section-title">Наша история</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>Наш книжный клуб начал свою работу в 2015 году как небольшая группа друзей, которые любили читать и обсуждать книги. Мы собирались в маленьком кафе раз в месяц, чтобы поделиться своими впечатлениями о прочитанном.</p>
+                <p>С годами наше сообщество росло, и сегодня мы насчитываем более 200 активных участников. Мы проводим встречи в уютном книжном магазине в центре города, а также организуем онлайн-обсуждения для тех, кто не может присутствовать лично.</p>
+                <p>Наша миссия — создавать пространство, где люди могут не только обсуждать литературу, но и находить единомышленников, делиться идеями и вдохновлять друг друга на новые открытия в мире книг.</p>
+            </div>
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Наш клуб в 2015 году">
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция "Наши правила" -->
+    <section class="rules-section">
+        <div class="rules-container">
+            <h2 class="section-title">Правила участия</h2>
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <div class="rule-icon">📖</div>
+                    <h3>Читайте книгу месяца</h3>
+                    <p>Каждый участник должен прочитать выбранную книгу до встречи, чтобы активно участвовать в обсуждении.</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">🗣️</div>
+                    <h3>Уважайте мнения других</h3>
+                    <p>Мы ценим разнообразие мнений. Даже если вы не согласны, выслушайте собеседника и аргументируйте свою позицию.</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">⏱️</div>
+                    <h3>Соблюдайте тайминг</h3>
+                    <p>Каждому участнику дается равное время для выступления. Это позволяет услышать всех.</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">📱</div>
+                    <h3>Без телефонов</h3>
+                    <p>Во время обсуждения просим отключать или убирать телефоны, чтобы не отвлекаться.</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">🍪</div>
+                    <h3>Приносите угощения</h3>
+                    <p>Традиционно каждый участник приносит что-то к чаю. Это создает уютную атмосферу.</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">😊</div>
+                    <h3>Главное правило</h3>
+                    <p>Наслаждайтесь общением и книгами! Мы здесь для удовольствия и вдохновения.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция "Команда" -->
+    <section class="team-section">
+        <h2 class="section-title">Наша команда</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Анна" class="member-photo">
+                <h3>Анна Смирнова</h3>
+                <p class="member-role">Основатель клуба</p>
+                <p>Литературный критик по образованию, Анна создала клуб из любви к книгам и желания делиться этой любовью с другими.</p>
+            </div>
+            <div class="team-member">
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Дмитрий" class="member-photo">
+                <h3>Дмитрий Петров</h3>
+                <p class="member-role">Координатор мероприятий</p>
+                <p>Организует встречи и следит за тем, чтобы каждое мероприятие проходило гладко и интересно.</p>
+            </div>
+            <div class="team-member">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Елена" class="member-photo">
+                <h3>Елена Козлова</h3>
+                <p class="member-role">Куратор библиотеки</p>
+                <p>Ведет архив обсужденных книг и помогает участникам с выбором литературы для чтения.</p>
+            </div>
+            <div class="team-member">
+                <img src="https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Михаил" class="member-photo">
+                <h3>Михаил Иванов</h3>
+                <p class="member-role">Технический специалист</p>
+                <p>Обеспечивает работу онлайн-трансляций и поддерживает наш сайт и соцсети.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подвал -->
+    <footer>
+        <p>© 2025 Книжный клуб. Все права защищены.</p>
+        <div class="social-links">
+            <a href="#"><span>Facebook</span></a>
+            <a href="#"><span>Instagram</span></a>
+            <a href="#"><span>Telegram</span></a>
+        </div>
+        <p>contact@bookclub.ru | +7 (123) 456-78-90</p>
+    </footer>
+
+    <script>
+        // Мобильное меню
+        const menuToggle = document.getElementById('mobile-menu');
+        const navLinks = document.getElementById('nav-links');
+        
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Эффект при скролле для шапки
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Анимация карточек правил и членов команды при прокрутке
+        const ruleCards = document.querySelectorAll('.rule-card');
+        const teamMembers = document.querySelectorAll('.team-member');
+        
+        function checkElements() {
+            const triggerBottom = window.innerHeight / 5 * 4;
+            
+            ruleCards.forEach((card, index) => {
+                const cardTop = card.getBoundingClientRect().top;
+                
+                if (cardTop < triggerBottom) {
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 100);
+                }
+            });
+            
+            teamMembers.forEach((member, index) => {
+                const memberTop = member.getBoundingClientRect().top;
+                
+                if (memberTop < triggerBottom) {
+                    setTimeout(() => {
+                        member.classList.add('visible');
+                    }, index * 100);
+                }
+            });
+        }
+        
+        // Изначально скрываем элементы
+        ruleCards.forEach(card => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        });
+        
+        teamMembers.forEach(member => {
+            member.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        });
+        
+        window.addEventListener('scroll', checkElements);
+        checkElements(); // Проверяем при загрузке, если элементы уже в поле зрения
+    </script>
+</body>
+</html>

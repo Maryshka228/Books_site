@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание встреч | Книжный клуб</title>
+    <style>
+        /* Основные стили (аналогичные главной странице) */
+        :root {
+            --beige: #F5F1E6;
+            --warm-gray: #D8D5CC;
+            --brown: #6B4F3D;
+            --dark-brown: #3E2D21;
+            --light-brown: #A78A72;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--beige);
+            color: var(--dark-brown);
+            line-height: 1.6;
+        }
+        
+        /* Шапка (аналогичная главной странице) */
+        header {
+            background-color: var(--brown);
+            color: var(--beige);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+        
+        header.scrolled {
+            padding: 0.5rem 2rem;
+            background-color: rgba(107, 79, 61, 0.95);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--beige);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--beige);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+        }
+        
+        /* Герой секция */
+        .schedule-hero {
+            height: 40vh;
+            background: linear-gradient(rgba(62, 45, 33, 0.7), rgba(62, 45, 33, 0.7)), 
+                        url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--beige);
+            padding: 0 1rem;
+            margin-top: 60px;
+        }
+        
+        .schedule-hero-content {
+            max-width: 800px;
+            animation: fadeIn 1.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .schedule-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Основное содержимое */
+        .schedule-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--dark-brown);
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 3px;
+            background-color: var(--brown);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* Календарь */
+        .calendar {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .calendar.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .calendar-header {
+            background-color: var(--brown);
+            color: var(--beige);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--light-brown);
+            color: white;
+        }
+        
+        .calendar-nav button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+        
+        .calendar-nav button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .calendar-month {
+            font-weight: bold;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: var(--warm-gray);
+        }
+        
+        .calendar-day-header {
+            background-color: var(--warm-gray);
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .calendar-day {
+            background-color: white;
+            padding: 1rem;
+            min-height: 100px;
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .calendar-day:hover {
+            background-color: var(--beige);
+        }
+        
+        .day-number {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .event {
+            background-color: var(--brown);
+            color: white;
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .event:hover {
+            background-color: var(--dark-brown);
+        }
+        
+        .other-month {
+            color: #aaa;
+            background-color: #f9f9f9;
+        }
+        
+        .today {
+            background-color: rgba(107, 79, 61, 0.1);
+            border: 1px solid var(--brown);
+        }
+        
+        /* Модальное окно события */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(-50px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            background-color: var(--brown);
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .event-detail {
+            margin-bottom: 1.5rem;
+        }
+        
+        .event-detail h3 {
+            color: var(--brown);
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--brown);
+            color: var(--beige);
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: var(--transition);
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            background-color: var(--dark-brown);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        
+        /* Форма записи */
+        .booking-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .booking-form.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--brown);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--warm-gray);
+            border-radius: 5px;
+            font-family: 'Georgia', serif;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--brown);
+            box-shadow: 0 0 0 3px rgba(107, 79, 61, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Подвал (аналогичный главной странице) */
+        footer {
+            background-color: var(--dark-brown);
+            color: var(--warm-gray);
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .social-links {
+            margin: 1rem 0;
+        }
+        
+        .social-links a {
+            color: var(--warm-gray);
+            margin: 0 10px;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            color: var(--beige);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 60px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 60px);
+                background-color: var(--brown);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: var(--transition);
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .nav-links li {
+                margin: 1.5rem 0;
+            }
+            
+            .schedule-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .calendar-day {
+                min-height: 80px;
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .event {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .schedule-hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .calendar-day-header {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            
+            .day-number {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header id="header">
+        <nav>
+            <div class="logo">Книжный клуб</div>
+            <div class="menu-toggle" id="mobile-menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="about.html">О клубе</a></li>
+                <li><a href="schedule.html" class="active">Расписание</a></li>
+                <li><a href="library.html">Библиотека</a></li>
+                <li><a href="reviews.html">Отзывы</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Герой секция -->
+    <section class="schedule-hero">
+        <div class="schedule-hero-content">
+            <h1>Расписание встреч</h1>
+            <p>Выберите дату и запишитесь на ближайшее мероприятие нашего клуба</p>
+        </div>
+    </section>
+
+    <!-- Основное содержимое -->
+    <div class="schedule-container">
+        <h2 class="section-title">Календарь мероприятий</h2>
+        
+        <!-- Календарь -->
+        <div class="calendar" id="calendar">
+            <div class="calendar-header">
+                Встречи книжного клуба
+            </div>
+            <div class="calendar-nav">
+                <button id="prev-month"><</button>
+                <div class="calendar-month" id="current-month">Апрель 2023</div>
+                <button id="next-month">></button>
+            </div>
+            <div class="calendar-grid" id="calendar-grid">
+                <!-- Дни недели -->
+                <div class="calendar-day-header">Пн</div>
+                <div class="calendar-day-header">Вт</div>
+                <div class="calendar-day-header">Ср</div>
+                <div class="calendar-day-header">Чт</div>
+                <div class="calendar-day-header">Пт</div>
+                <div class="calendar-day-header">Сб</div>
+                <div class="calendar-day-header">Вс</div>
+                
+                <!-- Дни календаря будут добавлены через JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Форма записи -->
+        <h2 class="section-title">Записаться на встречу</h2>
+        <form class="booking-form" id="booking-form">
+            <div class="form-group">
+                <label for="event-select">Выберите мероприятие:</label>
+                <select class="form-control" id="event-select" required>
+                    <option value="" disabled selected>-- Выберите встречу --</option>
+                    <option value="1984">15 апреля: "1984" Джордж Оруэлл</option>
+                    <option value="little-women">22 апреля: "Маленькие женщины" Луиза Мэй Олкотт</option>
+                    <option value="solitude">29 апреля: "Сто лет одиночества" Габриэль Гарсиа Маркес</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">Ваше имя:</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Телефон:</label>
+                <input type="tel" class="form-control" id="phone">
+            </div>
+            
+            <div class="form-group">
+                <label for="comments">Комментарии (необязательно):</label>
+                <textarea class="form-control" id="comments"></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-block">Записаться</button>
+        </form>
+    </div>
+    
+    <!-- Модальное окно события -->
+    <div class="modal" id="event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-event-title">Название мероприятия</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="event-detail">
+                    <h3>Дата и время</h3>
+                    <p id="modal-event-date">15 апреля, 19:00</p>
+                </div>
+                
+                <div class="event-detail">
+                    <h3>Описание</h3>
+                    <p id="modal-event-desc">Обсудим антиутопию, которая остается актуальной спустя десятилетия после написания.</p>
+                </div>
+                
+                <div class="event-detail">
+                    <h3>Место проведения</h3>
+                    <p>Книжный магазин "Читай-город", ул. Литературная, 15</p>
+                </div>
+                
+                <a href="#booking-form" class="btn btn-block" id="modal-book-btn">Записаться</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer>
+        <p>© 2025 Книжный клуб. Все права защищены.</p>
+        <div class="social-links">
+            <a href="#"><span>Facebook</span></a>
+            <a href="#"><span>Instagram</span></a>
+            <a href="#"><span>Telegram</span></a>
+        </div>
+        <p>contact@bookclub.ru | +7 (123) 456-78-90</p>
+    </footer>
+
+    <script>
+        // Мобильное меню
+        const menuToggle = document.getElementById('mobile-menu');
+        const navLinks = document.getElementById('nav-links');
+        
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Эффект при скролле для шапки
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Данные мероприятий
+        const events = [
+            {
+                id: '1984',
+                title: '"1984" Джордж Оруэлл',
+                date: new Date(2023, 3, 15),
+                time: '19:00',
+                description: 'Обсудим антиутопию, которая остается актуальной спустя десятилетия после написания. Поговорим о современных параллелях и вечных темах произведения.'
+            },
+            {
+                id: 'little-women',
+                title: '"Маленькие женщины" Луиза Мэй Олкотт',
+                date: new Date(2023, 3, 22),
+                time: '18:30',
+                description: 'Поговорим о классике, которая вдохновляет поколения читателей по всему миру. Обсудим характеры сестер Марч и их путь к взрослению.'
+            },
+            {
+                id: 'solitude',
+                title: '"Сто лет одиночества" Габриэль Гарсиа Маркес',
+                date: new Date(2023, 3, 29),
+                time: '19:00',
+                description: 'Погрузимся в магический реализм и обсудим это великое произведение. Разберем основные темы и символы романа.'
+            }
+        ];
+        
+        // Инициализация календаря
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        
+        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", 
+                          "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+        
+        const dayNames = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+        
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendar-grid');
+            const currentMonthElement = document.getElementById('current-month');
+            
+            // Очищаем предыдущие дни (кроме заголовков дней недели)
+            while (calendarGrid.children.length > 7) {
+                calendarGrid.removeChild(calendarGrid.lastChild);
+            }
+            
+            // Устанавливаем текущий месяц и год
+            currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            // Получаем первый день месяца и день недели
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const startingDay = firstDay.getDay();
+            
+            // Получаем количество дней в месяце
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // Получаем количество дней в предыдущем месяце
+            const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+            
+            // Добавляем пустые клетки для дней предыдущего месяца
+            for (let i = 0; i < startingDay; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.textContent = daysInPrevMonth - startingDay + i + 1;
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Добавляем дни текущего месяца
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                // Проверяем, является ли день сегодняшним
+                if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+                    dayElement.classList.add('today');
+                }
+                
+                dayElement.innerHTML = `<div class="day-number">${i}</div>`;
+                
+                // Добавляем мероприятия на этот день
+                const currentDate = new Date(currentYear, currentMonth, i);
+                events.forEach(event => {
+                    if (event.date.getDate() === i && 
+                        event.date.getMonth() === currentMonth && 
+                        event.date.getFullYear() === currentYear) {
+                        
+                        const eventElement = document.createElement('div');
+                        eventElement.className = 'event';
+                        eventElement.textContent = event.title;
+                        eventElement.dataset.eventId = event.id;
+                        
+                        eventElement.addEventListener('click', () => {
+                            openModal(event);
+                        });
+                        
+                        dayElement.appendChild(eventElement);
+                    }
+                });
+                
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Добавляем пустые клетки для дней следующего месяца
+            const totalCells = startingDay + daysInMonth;
+            const remainingCells = 7 - (totalCells % 7);
+            
+            if (remainingCells < 7) {
+                for (let i = 1; i <= remainingCells; i++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day other-month';
+                    dayElement.textContent = i;
+                    calendarGrid.appendChild(dayElement);
+                }
+            }
+            
+            // Показываем календарь с анимацией
+            setTimeout(() => {
+                document.getElementById('calendar').classList.add('visible');
+            }, 100);
+        }
+        
+        // Переключение месяцев
+        document.getElementById('prev-month').addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+        
+        document.getElementById('next-month').addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+        
+        // Модальное окно
+        const modal = document.getElementById('event-modal');
+        const modalClose = document.getElementById('modal-close');
+        
+        function openModal(event) {
+            document.getElementById('modal-event-title').textContent = event.title;
+            document.getElementById('modal-event-date').textContent = 
+                `${event.date.getDate()} ${monthNames[event.date.getMonth()]}, ${event.time}`;
+            document.getElementById('modal-event-desc').textContent = event.description;
+            document.getElementById('modal-book-btn').dataset.eventId = event.id;
+            
+            // Устанавливаем выбранное мероприятие в форме
+            document.getElementById('event-select').value = event.id;
+            
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+        
+        modalClose.addEventListener('click', () => {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        });
+        
+        // Закрытие модального окна при клике вне его
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+        });
+        
+        // Обработка формы
+        document.getElementById('booking-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Здесь должна быть логика отправки формы
+            const eventSelect = document.getElementById('event-select');
+            const name = document.getElementById('name').value;
+            
+            // Просто показываем сообщение об успехе
+            alert(`Спасибо, ${name}! Вы записаны на "${eventSelect.options[eventSelect.selectedIndex].text}".`);
+            
+            // Закрываем модальное окно, если оно открыто
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+            
+            // Очищаем форму
+            e.target.reset();
+        });
+        
+        // Показываем форму с анимацией при загрузке
+        window.addEventListener('load', () => {
+            renderCalendar();
+            
+            setTimeout(() => {
+                document.getElementById('booking-form').classList.add('visible');
+            }, 300);
+        });
+        
+        // Анимация элементов при прокрутке
+        const animatedElements = [document.getElementById('calendar'), document.getElementById('booking-form')];
+        
+        function checkElements() {
+            const triggerBottom = window.innerHeight / 5 * 4;
+            
+            animatedElements.forEach(el => {
+                if (!el) return;
+                
+                const elTop = el.getBoundingClientRect().top;
+                
+                if (elTop < triggerBottom) {
+                    el.classList.add('visible');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', checkElements);
+        checkElements(); // Проверяем при загрузке
+    </script>
+</body>
+</html>

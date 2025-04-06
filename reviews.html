@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы участников | Книжный клуб</title>
+    <style>
+        /* Основные настройки */
+        :root {
+            --beige: #F5F1E6;
+            --warm-gray: #D8D5CC;
+            --brown: #6B4F3D;
+            --dark-brown: #3E2D21;
+            --light-brown: #A78A72;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--beige);
+            color: var(--dark-brown);
+            line-height: 1.6;
+            padding-top: 80px; /* Оставляем отступ для шапки */
+        }
+
+        /* Исправленная шапка */
+        header {
+            background-color: var(--brown);
+            color: var(--beige);
+            padding: 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            height: 80px;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 100%;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            height: 100%;
+            align-items: center;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--beige);
+            text-decoration: none;
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 20px;
+            left: 0;
+            background-color: var(--beige);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .nav-links a.active {
+            font-weight: bold;
+        }
+        
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--beige);
+        }
+
+        /* Герой-секция */
+        .reviews-hero {
+            height: 300px;
+            background: linear-gradient(rgba(62, 45, 33, 0.7), rgba(62, 45, 33, 0.7)), 
+                        url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--beige);
+            padding: 0 1rem;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+        }
+        
+        .reviews-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Основной контент */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--dark-brown);
+        }
+
+        /* Фильтры отзывов */
+        .reviews-filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-btn {
+            background: var(--warm-gray);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--brown);
+            color: white;
+        }
+
+        /* Список отзывов */
+        .reviews-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .review-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+        
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .review-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+            border: 2px solid var(--warm-gray);
+        }
+        
+        .review-author {
+            font-weight: bold;
+            color: var(--brown);
+        }
+        
+        .review-date {
+            color: var(--light-brown);
+            font-size: 0.8rem;
+        }
+        
+        .review-rating {
+            display: flex;
+            margin: 0.5rem 0;
+        }
+        
+        .star {
+            color: #FFD700;
+            margin-right: 0.2rem;
+        }
+        
+        .review-book {
+            font-style: italic;
+            color: var(--brown);
+            margin-bottom: 0.5rem;
+        }
+        
+        .review-text {
+            margin-bottom: 1rem;
+        }
+        
+        .review-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .review-image {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .review-image:hover {
+            opacity: 0.8;
+        }
+
+        /* Форма добавления отзыва */
+        .add-review {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .form-title {
+            text-align: center;
+            color: var(--brown);
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--brown);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--warm-gray);
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .rating-select {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .rating-select input {
+            display: none;
+        }
+        
+        .rating-select label {
+            font-size: 1.5rem;
+            color: var(--warm-gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .rating-select input:checked ~ label {
+            color: #FFD700;
+        }
+        
+        .rating-select label:hover,
+        .rating-select label:hover ~ label {
+            color: #FFD700;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--brown);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        
+        .btn:hover {
+            background: var(--dark-brown);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        /* Модальное окно изображения */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90vh;
+        }
+        
+        .modal-image {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 4px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Подвал */
+        footer {
+            background: var(--dark-brown);
+            color: var(--warm-gray);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .social-links a {
+            color: var(--warm-gray);
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            color: var(--beige);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                background: var(--brown);
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem 0;
+                transition: var(--transition);
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .nav-links li {
+                margin: 1rem 0;
+            }
+            
+            .reviews-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.7rem;
+            }
+            
+            .reviews-list {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .reviews-hero {
+                height: 250px;
+            }
+            
+            .reviews-hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .review-images {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <nav>
+            <div class="logo">Книжный клуб</div>
+            <button class="menu-toggle" id="menuToggle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="about.html">О клубе</a></li>
+                <li><a href="schedule.html">Расписание</a></li>
+                <li><a href="library.html">Библиотека</a></li>
+                <li><a href="reviews.html" class="active">Отзывы</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Герой-секция -->
+    <section class="reviews-hero">
+        <div class="hero-content">
+            <h1>Отзывы участников</h1>
+            <p>Что говорят наши участники о встречах книжного клуба</p>
+        </div>
+    </section>
+
+    <!-- Основной контент -->
+    <main class="container">
+        <h2 class="section-title">Последние отзывы</h2>
+        
+        <!-- Фильтры отзывов -->
+        <div class="reviews-filters">
+            <button class="filter-btn active" data-filter="all">Все отзывы</button>
+            <button class="filter-btn" data-filter="5">Только 5 звезд</button>
+            <button class="filter-btn" data-filter="meetup">О встречах</button>
+            <button class="filter-btn" data-filter="books">О книгах</button>
+        </div>
+        
+        <!-- Список отзывов -->
+        <div class="reviews-list" id="reviewsList">
+            <!-- Отзывы будут загружены через JavaScript -->
+        </div>
+        
+        <!-- Форма добавления отзыва -->
+        <div class="add-review">
+            <h3 class="form-title">Оставить свой отзыв</h3>
+            <form id="reviewForm">
+                <div class="form-group">
+                    <label for="reviewName" class="form-label">Ваше имя</label>
+                    <input type="text" id="reviewName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reviewBook" class="form-label">О какой книге/встрече (необязательно)</label>
+                    <input type="text" id="reviewBook" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ваша оценка</label>
+                    <div class="rating-select">
+                        <input type="radio" id="star5" name="rating" value="5">
+                        <label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1">★</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reviewText" class="form-label">Ваш отзыв</label>
+                    <textarea id="reviewText" class="form-control" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reviewImages" class="form-label">Фотографии (необязательно)</label>
+                    <input type="file" id="reviewImages" class="form-control" multiple accept="image/*">
+                </div>
+                
+                <button type="submit" class="btn btn-block">Отправить отзыв</button>
+            </form>
+        </div>
+    </main>
+    
+    <!-- Модальное окно изображения -->
+    <div class="modal-overlay" id="imageModal">
+        <button class="modal-close" id="modalClose">&times;</button>
+        <div class="modal-content">
+            <img src="" alt="" class="modal-image" id="modalImage">
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer>
+        <p>© 2023 Книжный клуб. Все права защищены.</p>
+        <div class="social-links">
+            <a href="#"><span>Facebook</span></a>
+            <a href="#"><span>Instagram</span></a>
+            <a href="#"><span>Telegram</span></a>
+        </div>
+        <p>contact@bookclub.ru | +7 (123) 456-78-90</p>
+    </footer>
+
+    <script>
+        // Данные отзывов
+        const reviewsData = [
+            {
+                id: 1,
+                name: "Анна Смирнова",
+                avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+                date: "15 апреля 2023",
+                rating: 5,
+                book: "1984 - Джордж Оруэлл",
+                text: "Это была одна из самых интересных встреч! Обсуждение '1984' получилось очень живым и содержательным. Особенно запомнилась дискуссия о современных параллелях с описанным в книге обществом. Организация на высшем уровне - уютная атмосфера, вкусный чай и печенье.",
+                images: [
+                    "https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                ],
+                type: ["meetup", "books"]
+            },
+            {
+                id: 2,
+                name: "Дмитрий Петров",
+                avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+                date: "8 апреля 2023",
+                rating: 4,
+                book: "Маленькие женщины - Луиза Мэй Олкотт",
+                text: "Приятно удивлен глубиной обсуждения, хотя изначально скептически относился к 'женской' литературе. Джо Марч - потрясающий персонаж! Минус один балл за то, что не хватило времени всем высказаться - желающих было много.",
+                images: [],
+                type: ["books"]
+            },
+            {
+                id: 3,
+                name: "Елена Козлова",
+                avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+                date: "1 апреля 2023",
+                rating: 5,
+                book: "Встреча книжного клуба",
+                text: "Моя первая встреча в клубе - и я в восторге! Теплая, дружеская атмосфера, интересные люди, умные дискуссии. Особенно понравилось, что мнения участников иногда кардинально расходились - это сделало обсуждение особенно ценным. Обязательно приду еще!",
+                images: [
+                    "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                ],
+                type: ["meetup"]
+            },
+            {
+                id: 4,
+                name: "Михаил Иванов",
+                avatar: "https://randomuser.me/api/portraits/men/75.jpg",
+                date: "25 марта 2023",
+                rating: 5,
+                book: "Сто лет одиночества - Габриэль Гарсиа Маркес",
+                text: "Гениальный роман и блестящее обсуждение! Спасибо организаторам за подборку дополнительных материалов - они помогли лучше понять контекст создания книги. Отдельное спасибо за список рекомендованной литературы в том же жанре.",
+                images: [
+                    "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                ],
+                type: ["meetup", "books"]
+            },
+            {
+                id: 5,
+                name: "Ольга Морозова",
+                avatar: "https://randomuser.me/api/portraits/women/25.jpg",
+                date: "18 марта 2023",
+                rating: 3,
+                book: "Тихий Дон - Михаил Шолохов",
+                text: "Книга, безусловно, шедевр, но обсуждение получилось несколько поверхностным. Возможно, стоит выделять больше времени на такие объемные произведения. Но в целом впечатления положительные - узнала много интересных трактовок.",
+                images: [],
+                type: ["books"]
+            },
+            {
+                id: 6,
+                name: "Сергей Лебедев",
+                avatar: "https://randomuser.me/api/portraits/men/45.jpg",
+                date: "11 марта 2023",
+                rating: 5,
+                book: "Онлайн-встреча клуба",
+                text: "Не смог присутствовать лично, но онлайн-формат оказался очень удобным! Качество связи хорошее, все было слышно и видно. Особенно понравилось, что организаторы прислали после встречи дополнительные материалы и запись обсуждения. Так держать!",
+                images: [],
+                type: ["meetup"]
+            }
+        ];
+
+        // DOM элементы
+        const reviewsList = document.getElementById('reviewsList');
+        const reviewForm = document.getElementById('reviewForm');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalClose = document.getElementById('modalClose');
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        // Текущий фильтр
+        let currentFilter = 'all';
+
+        // Загрузка отзывов
+        function loadReviews() {
+            reviewsList.innerHTML = '';
+            
+            const filteredReviews = reviewsData.filter(review => {
+                if (currentFilter === 'all') return true;
+                if (currentFilter === '5') return review.rating === 5;
+                return review.type.includes(currentFilter);
+            });
+            
+            if (filteredReviews.length === 0) {
+                reviewsList.innerHTML = '<p style="grid-column:1/-1;text-align:center;">Отзывы не найдены</p>';
+                return;
+            }
+            
+            filteredReviews.forEach(review => {
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'review-card';
+                
+                // Создаем звезды рейтинга
+                let stars = '';
+                for (let i = 0; i < 5; i++) {
+                    stars += i < review.rating 
+                        ? '<span class="star">★</span>' 
+                        : '<span class="star">☆</span>';
+                }
+                
+                // Создаем изображения, если они есть
+                let imagesHTML = '';
+                if (review.images.length > 0) {
+                    imagesHTML = '<div class="review-images">';
+                    review.images.forEach(img => {
+                        imagesHTML += `<img src="${img}" alt="Фото отзыва" class="review-image" data-image="${img}">`;
+                    });
+                    imagesHTML += '</div>';
+                }
+                
+                reviewCard.innerHTML = `
+                    <div class="review-header">
+                        <img src="${review.avatar}" alt="${review.name}" class="review-avatar">
+                        <div>
+                            <div class="review-author">${review.name}</div>
+                            <div class="review-date">${review.date}</div>
+                            <div class="review-rating">${stars}</div>
+                        </div>
+                    </div>
+                    ${review.book ? `<div class="review-book">${review.book}</div>` : ''}
+                    <div class="review-text">${review.text}</div>
+                    ${imagesHTML}
+                `;
+                
+                reviewsList.appendChild(reviewCard);
+            });
+            
+            // Добавляем обработчики для изображений
+            document.querySelectorAll('.review-image').forEach(img => {
+                img.addEventListener('click', () => {
+                    modalImage.src = img.dataset.image;
+                    imageModal.classList.add('active');
+                });
+            });
+        }
+
+        // Отправка формы отзыва
+        reviewForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('reviewName').value;
+            const book = document.getElementById('reviewBook').value;
+            const rating = document.querySelector('input[name="rating"]:checked')?.value || 0;
+            const text = document.getElementById('reviewText').value;
+            
+            // В реальном приложении здесь была бы отправка на сервер
+            alert(`Спасибо, ${name}! Ваш отзыв отправлен.`);
+            
+            // Очищаем форму
+            this.reset();
+        });
+
+        // Фильтрация отзывов
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                loadReviews();
+            });
+        });
+
+        // Закрытие модального окна изображения
+        modalClose.addEventListener('click', () => {
+            imageModal.classList.remove('active');
+        });
+
+        // Мобильное меню
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Инициализация при загрузке
+        window.addEventListener('DOMContentLoaded', () => {
+            loadReviews();
+        });
+    </script>
+</body>
+</html>
